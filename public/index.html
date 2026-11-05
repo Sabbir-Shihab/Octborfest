@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ofrenda — Ghost in the Machine</title>
+    <meta
+      name="description"
+      content="A digital ofrenda powered by open-weight Qwen on Cerebras. Light a candle for someone — or something — you refuse to forget."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Sora:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="sky" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="glow glow-c"></div>
+      <div class="stars"></div>
+    </div>
+    <div id="petals" class="petals" aria-hidden="true"></div>
+
+    <header class="top">
+      <a class="mark" href="#top">Ofrenda</a>
+      <nav>
+        <a href="#dedicate">Dedicate</a>
+        <a href="#altar">Altar</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="brand">Ofrenda</p>
+          <h1>Light a candle for what still lives in memory.</h1>
+          <p class="lede">
+            A digital altar for Día de los Muertos — and the ghosts in our machines.
+            You bring the story. Open-weight Qwen writes the remembrance.
+          </p>
+          <div class="cta-row">
+            <a class="btn primary" href="#dedicate">
+              <span class="btn-flame" aria-hidden="true"></span>
+              Build an ofrenda
+            </a>
+            <a class="btn ghost" href="#altar">See the altar wall</a>
+          </div>
+        </div>
+
+        <div class="hero-altar" aria-hidden="true">
+          <div class="papel">
+            <svg viewBox="0 0 800 48" preserveAspectRatio="none">
+              <path
+                fill="currentColor"
+                d="M0 0h800v20c-20 0-20 28-40 28s-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28V0z"
+              />
+            </svg>
+          </div>
+          <div class="shelf">
+            <div class="candle-group">
+              <div class="wax tall crimson lit"><i></i></div>
+              <div class="wax mid marigold lit"><i></i></div>
+              <div class="wax short ivory lit"><i></i></div>
+              <div class="wax mid teal lit"><i></i></div>
+              <div class="wax tall marigold lit"><i></i></div>
+            </div>
+            <div class="marigolds">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="veil-divider" aria-hidden="true">
+        <span></span>
+        <em>the veil thins here</em>
+        <span></span>
+      </div>
+
+      <section class="dedicate" id="dedicate">
+        <div class="section-copy">
+          <p class="eyebrow">Dedicate</p>
+          <h2>Place your offering</h2>
+          <p>
+            Name who — or what — you are honoring. Qwen shapes a remembrance,
+            symbolic offerings, and one quiet whisper.
+          </p>
+        </div>
+
+        <form id="ofrenda-form" class="form" novalidate>
+          <div class="key-panel">
+            <div class="key-panel-head">
+              <p class="eyebrow">Cerebras key</p>
+              <p class="key-hint">
+                Paste your key or upload a <code>.txt</code> / <code>.env</code> file.
+                Saved only in this browser.
+                <a href="https://cloud.cerebras.ai" target="_blank" rel="noopener">Get a free key</a>
+              </p>
+            </div>
+
+            <label class="field">
+              <span>API key</span>
+              <div class="key-row">
+                <input
+                  id="api-key"
+                  name="apiKey"
+                  type="password"
+                  maxlength="200"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="csk-…"
+                />
+                <button type="button" class="btn ghost small" id="toggle-key" aria-pressed="false">
+                  Show
+                </button>
+              </div>
+            </label>
+
+            <div class="key-actions">
+              <label class="upload-btn">
+                <input id="key-file" type="file" accept=".txt,.env,text/plain" hidden />
+                Upload key file
+              </label>
+              <button type="button" class="linkish" id="clear-key">Clear saved key</button>
+              <label class="remember">
+                <input type="checkbox" id="remember-key" checked />
+                Remember on this device
+              </label>
+            </div>
+            <p class="key-status" id="key-status" role="status" aria-live="polite"></p>
+          </div>
+
+          <label class="field">
+            <span>Name</span>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              maxlength="80"
+              required
+              placeholder="Abuela Rosa · BASIC · that abandoned side project"
+              autocomplete="off"
+            />
+          </label>
+
+          <fieldset class="kinds">
+            <legend>What are you honoring?</legend>
+            <label class="chip"><input type="radio" name="kind" value="person" checked /> Person</label>
+            <label class="chip"><input type="radio" name="kind" value="language" /> Dead language</label>
+            <label class="chip"><input type="radio" name="kind" value="project" /> Abandoned project</label>
+            <label class="chip"><input type="radio" name="kind" value="craft" /> Forgotten craft</label>
+            <label class="chip"><input type="radio" name="kind" value="place" /> Place</label>
+          </fieldset>
+
+          <label class="field">
+            <span>Years or era <em>(optional)</em></span>
+            <input
+              id="years"
+              name="years"
+              type="text"
+              maxlength="40"
+              placeholder="1942–2018 · 1980s · sprint 14"
+              autocomplete="off"
+            />
+          </label>
+
+          <label class="field">
+            <span>A memory you still carry</span>
+            <textarea
+              id="memory"
+              name="memory"
+              rows="5"
+              maxlength="1200"
+              required
+              placeholder="She taught me to save seeds in old biscuit tins. The kitchen always smelled like citrus and rain."
+            ></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="btn primary" id="submit-btn">
+              <span class="btn-flame" aria-hidden="true"></span>
+              Light the candle
+            </button>
+            <p class="status" id="status" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+
+        <article id="result" class="result" hidden>
+          <div class="result-glow" aria-hidden="true"></div>
+          <div class="candle-stage" aria-hidden="true">
+            <div class="wax display marigold lit" id="result-wax"><i class="flame-core"></i></div>
+          </div>
+          <p class="result-kicker">Remembrance</p>
+          <h3 id="result-title"></h3>
+          <div id="result-body" class="remembrance"></div>
+          <p class="offerings-label">On the altar</p>
+          <ul id="result-offerings" class="offerings"></ul>
+          <blockquote id="result-whisper" class="whisper"></blockquote>
+          <p class="meta" id="result-meta"></p>
+          <button type="button" class="btn ghost" id="save-btn">Keep on the altar wall</button>
+        </article>
+      </section>
+
+      <section class="altar" id="altar">
+        <div class="section-copy">
+          <p class="eyebrow">Keep</p>
+          <h2>Altar wall</h2>
+          <p>Candles you keep stay in this browser — private, local, yours.</p>
+        </div>
+        <div id="altar-wall" class="altar-wall"></div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <div class="papel foot-papel" aria-hidden="true">
+        <svg viewBox="0 0 800 48" preserveAspectRatio="none">
+          <path
+            fill="currentColor"
+            d="M0 0h800v20c-20 0-20 28-40 28s-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28-20 28-40 28-20-28-40-28V0z"
+          />
+        </svg>
+      </div>
+      <p>
+        <strong>Ofrenda</strong> · Ghost in the Machine · open-weight
+        <span>Qwen 3.8-27B</span> on Cerebras
+      </p>
+      <p class="fine">Built for Hacktoberfest · #figma #hacktoberfest #makeathon</p>
+    </footer>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
