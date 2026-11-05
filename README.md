@@ -23,6 +23,15 @@ npm run dev
 
 Open http://localhost:3001 → paste/upload your key from [cloud.cerebras.ai](https://cloud.cerebras.ai) → dedicate an ofrenda.
 
+## Deploy on Vercel
+
+1. Open [vercel.com/new](https://vercel.com/new)
+2. Import **Sabbir-Shihab/Octborfest** (Continue with GitHub)
+3. Deploy — no env vars required (API key is entered in the UI)
+4. Open the `*.vercel.app` URL
+
+Repo already includes `api/index.js` + `vercel.json` rewrites.
+
 ## Stack
 
 | Piece | Role |
