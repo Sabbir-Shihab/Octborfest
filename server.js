@@ -1,10 +1,14 @@
 import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 import { craftOfrenda } from "./src/ofrenda.js";
 import { DEFAULT_MODEL } from "./src/cerebras.js";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
+
 app.use(express.json({ limit: "48kb" }));
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 
 const PORT = process.env.PORT || 3001;
 const APP_URL = process.env.APP_URL || `http://localhost:${PORT}`;
@@ -65,4 +69,14 @@ app.post("/api/ofrenda", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`Ofrenda glowing at ${APP_URL}`));
+// SPA-ish fallback for unknown non-API paths
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api/")) return next();
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+export default app;
+
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => console.log(`Ofrenda glowing at ${APP_URL}`));
+}
