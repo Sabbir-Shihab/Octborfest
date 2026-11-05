@@ -12,7 +12,7 @@ Closed chat apps lock family stories and grief inside a vendor’s cloud. Ofrend
 
 ## Quick start
 
-Needs **Node.js 20.6+**. Works **without any API key** (local altar craft). Optional Cerebras key in the UI for open-weight Qwen.
+Needs **Node.js 20.6+**. **No API key required** — local altar logic crafts remembrances offline. Optional Cerebras key (UI paste/upload) switches to Qwen.
 
 ```powershell
 cd ofrenda
@@ -21,7 +21,7 @@ Copy-Item .env.example .env
 npm run dev
 ```
 
-Open http://localhost:3001 → paste/upload your key from [cloud.cerebras.ai](https://cloud.cerebras.ai) → dedicate an ofrenda.
+Open http://localhost:3001 → dedicate an ofrenda (key optional).
 
 ## Deploy on Vercel
 

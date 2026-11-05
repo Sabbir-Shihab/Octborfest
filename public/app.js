@@ -136,16 +136,14 @@ function renderResult(ofrenda, input) {
   document.getElementById("result-whisper").textContent = ofrenda.whisper
     ? `“${ofrenda.whisper}”`
     : "";
-
+  const source = ofrenda.source || (ofrenda.model === "local-altar" ? "local" : "cerebras");
   const engine =
-    ofrenda.mode === "cerebras"
+    source === "cerebras"
       ? `${ofrenda.model} · ${ofrenda.latencyMs} ms on Cerebras`
-      : ofrenda.mode === "local-fallback"
+      : source === "local-fallback"
         ? `local altar (Cerebras fallback) · ${ofrenda.latencyMs} ms`
-        : `local altar · ${ofrenda.latencyMs} ms · no API key needed`;
-  document.getElementById("result-meta").textContent = ofrenda.note
-    ? `${engine} — ${ofrenda.note}`
-    : engine;
+        : `local altar · ${ofrenda.latencyMs} ms`;
+  document.getElementById("result-meta").textContent = engine;
 
   setResultCandle(ofrenda.candle);
   resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -261,9 +259,7 @@ form.addEventListener("submit", async (event) => {
 
   submitBtn.disabled = true;
   setStatus(
-    apiKey
-      ? "The veil thins… Qwen is writing."
-      : "Lighting the local altar (no API key)…"
+    apiKey ? "The veil thins… Qwen is writing." : "The veil thins… local altar is writing."
   );
   resultEl.hidden = true;
 
@@ -279,11 +275,7 @@ form.addEventListener("submit", async (event) => {
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || "Request failed");
     renderResult(json.ofrenda, payload);
-    setStatus(
-      json.ofrenda?.mode === "cerebras"
-        ? "Candle lit with Qwen."
-        : "Candle lit on the local altar."
-    );
+    setStatus("Candle lit.");
   } catch (err) {
     setStatus(err.message || "Something went wrong.", true);
   } finally {
@@ -306,7 +298,7 @@ if (saved) {
   apiKeyInput.value = saved;
   setKeyStatus(`Loaded saved key: ${maskKey(saved)}`, "ok");
 } else {
-  setKeyStatus("No key — local altar mode is on. Optional: add Cerebras for Qwen.", "ok");
+  setKeyStatus("Works without a key — local altar is ready.", "ok");
 }
 
 spawnPetals();

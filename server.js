@@ -55,7 +55,9 @@ app.post("/api/ofrenda", async (req, res) => {
     res.json({ ofrenda });
   } catch (err) {
     console.error(err?.message || err);
-    res.status(500).json({ error: err.message || "The candles flickered out." });
+    res.status(500).json({
+      error: err?.message || "The candles flickered out.",
+    });
   }
 });
 

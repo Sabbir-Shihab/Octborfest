@@ -64,29 +64,28 @@ async function craftWithCerebras({ name, kind, years, memory, apiKey, model }) {
       : "marigold",
     latencyMs,
     model: modelId,
-    mode: "cerebras",
+    source: "cerebras",
   };
 }
 
 /**
- * Prefer Cerebras when a key is present; otherwise craft locally so the app always works.
- * If Cerebras fails (bad key / network), fall back to local instead of breaking the altar.
+ * Prefer Cerebras when a key is present; otherwise (or on failure) use local altar logic.
  */
-export async function craftOfrenda(input) {
-  const apiKey = String(input.apiKey || "").trim();
-  if (!apiKey) {
-    return craftLocalOfrenda(input);
+export async function craftOfrenda({ name, kind, years, memory, apiKey, model }) {
+  const key = String(apiKey || "").trim();
+  if (!key) {
+    return craftLocalOfrenda({ name, kind, years, memory });
   }
 
   try {
-    return await craftWithCerebras(input);
+    return await craftWithCerebras({ name, kind, years, memory, apiKey: key, model });
   } catch (err) {
-    console.error("Cerebras failed, using local altar:", err?.message || err);
-    const local = craftLocalOfrenda(input);
+    console.error("Cerebras failed — falling back to local altar:", err?.message || err);
+    const local = craftLocalOfrenda({ name, kind, years, memory });
     return {
       ...local,
-      mode: "local-fallback",
-      note: "Cerebras unavailable — crafted on the local altar instead.",
+      source: "local-fallback",
+      note: "Cerebras unavailable; crafted locally.",
     };
   }
 }
