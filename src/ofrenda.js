@@ -4,6 +4,7 @@ import {
   parseJsonObject,
   stripThink,
 } from "./cerebras.js";
+import { craftLocalOfrenda } from "./localCraft.js";
 
 const SYSTEM = `You are the quiet keeper of a digital ofrenda — an altar for Día de los Muertos and for "Ghost in the Machine" remembrances.
 You help people honor someone they miss, a forgotten craft, an abandoned project, or a dead programming language.
@@ -23,7 +24,7 @@ Reply with ONLY a JSON object (no markdown fences) shaped like:
 If the dedication is thin, invent gently from what is given — never invent a false death date or claim facts the user did not share.
 /no_think`;
 
-export async function craftOfrenda({ name, kind, years, memory, apiKey, model }) {
+async function craftWithCerebras({ name, kind, years, memory, apiKey, model }) {
   const cerebras = createCerebrasClient(apiKey);
   const modelId = String(model || DEFAULT_MODEL).trim() || DEFAULT_MODEL;
   const started = Date.now();
@@ -63,5 +64,29 @@ export async function craftOfrenda({ name, kind, years, memory, apiKey, model })
       : "marigold",
     latencyMs,
     model: modelId,
+    mode: "cerebras",
   };
+}
+
+/**
+ * Prefer Cerebras when a key is present; otherwise craft locally so the app always works.
+ * If Cerebras fails (bad key / network), fall back to local instead of breaking the altar.
+ */
+export async function craftOfrenda(input) {
+  const apiKey = String(input.apiKey || "").trim();
+  if (!apiKey) {
+    return craftLocalOfrenda(input);
+  }
+
+  try {
+    return await craftWithCerebras(input);
+  } catch (err) {
+    console.error("Cerebras failed, using local altar:", err?.message || err);
+    const local = craftLocalOfrenda(input);
+    return {
+      ...local,
+      mode: "local-fallback",
+      note: "Cerebras unavailable — crafted on the local altar instead.",
+    };
+  }
 }

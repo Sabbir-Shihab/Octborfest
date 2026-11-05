@@ -12,7 +12,7 @@ Closed chat apps lock family stories and grief inside a vendor’s cloud. Ofrend
 
 ## Quick start
 
-Needs **Node.js 20.6+**. Cerebras API key is entered **in the UI** (paste or upload a `.txt` / `.env` file). Optional `.env` fallback also works.
+Needs **Node.js 20.6+**. Works **without any API key** (local altar craft). Optional Cerebras key in the UI for open-weight Qwen.
 
 ```powershell
 cd ofrenda

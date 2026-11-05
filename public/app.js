@@ -136,8 +136,16 @@ function renderResult(ofrenda, input) {
   document.getElementById("result-whisper").textContent = ofrenda.whisper
     ? `“${ofrenda.whisper}”`
     : "";
-  document.getElementById("result-meta").textContent =
-    `${ofrenda.model} · ${ofrenda.latencyMs} ms on Cerebras`;
+
+  const engine =
+    ofrenda.mode === "cerebras"
+      ? `${ofrenda.model} · ${ofrenda.latencyMs} ms on Cerebras`
+      : ofrenda.mode === "local-fallback"
+        ? `local altar (Cerebras fallback) · ${ofrenda.latencyMs} ms`
+        : `local altar · ${ofrenda.latencyMs} ms · no API key needed`;
+  document.getElementById("result-meta").textContent = ofrenda.note
+    ? `${engine} — ${ofrenda.note}`
+    : engine;
 
   setResultCandle(ofrenda.candle);
   resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -241,13 +249,7 @@ keyFileInput.addEventListener("change", async () => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const apiKey = getApiKey();
-  if (!apiKey) {
-    setStatus("Add your Cerebras API key first (paste or upload).", true);
-    apiKeyInput.focus();
-    return;
-  }
-
-  persistKey(apiKey);
+  if (apiKey) persistKey(apiKey);
 
   const data = new FormData(form);
   const payload = {
@@ -258,22 +260,30 @@ form.addEventListener("submit", async (event) => {
   };
 
   submitBtn.disabled = true;
-  setStatus("The veil thins… Qwen is writing.");
+  setStatus(
+    apiKey
+      ? "The veil thins… Qwen is writing."
+      : "Lighting the local altar (no API key)…"
+  );
   resultEl.hidden = true;
 
   try {
+    const headers = { "Content-Type": "application/json" };
+    if (apiKey) headers["X-Cerebras-Api-Key"] = apiKey;
+
     const res = await fetch("/api/ofrenda", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Cerebras-Api-Key": apiKey,
-      },
+      headers,
       body: JSON.stringify(payload),
     });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || "Request failed");
     renderResult(json.ofrenda, payload);
-    setStatus("Candle lit.");
+    setStatus(
+      json.ofrenda?.mode === "cerebras"
+        ? "Candle lit with Qwen."
+        : "Candle lit on the local altar."
+    );
   } catch (err) {
     setStatus(err.message || "Something went wrong.", true);
   } finally {
@@ -295,6 +305,8 @@ const saved = loadSavedKey();
 if (saved) {
   apiKeyInput.value = saved;
   setKeyStatus(`Loaded saved key: ${maskKey(saved)}`, "ok");
+} else {
+  setKeyStatus("No key — local altar mode is on. Optional: add Cerebras for Qwen.", "ok");
 }
 
 spawnPetals();

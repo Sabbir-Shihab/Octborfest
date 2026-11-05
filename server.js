@@ -28,19 +28,13 @@ app.get("/api/health", (_req, res) => {
     serverKey: Boolean(String(process.env.CEREBRAS_API_KEY || "").trim()),
     model: DEFAULT_MODEL,
     acceptsClientKey: true,
+    worksWithoutKey: true,
   });
 });
 
 app.post("/api/ofrenda", async (req, res) => {
   try {
     const apiKey = resolveApiKey(req);
-    if (!apiKey) {
-      return res.status(400).json({
-        error:
-          "Paste your Cerebras API key in the form (or upload a key file). Get one free at cloud.cerebras.ai",
-      });
-    }
-
     const name = String(req.body?.name || "").trim().slice(0, 80);
     const kind = String(req.body?.kind || "person").trim().toLowerCase();
     const years = String(req.body?.years || "").trim().slice(0, 40);
@@ -61,15 +55,10 @@ app.post("/api/ofrenda", async (req, res) => {
     res.json({ ofrenda });
   } catch (err) {
     console.error(err?.message || err);
-    const msg = String(err?.message || "The candles flickered out.");
-    const status = /api key|401|auth|unauthorized/i.test(msg) ? 401 : 500;
-    res.status(status).json({
-      error: status === 401 ? "Cerebras rejected that API key. Check and try again." : msg,
-    });
+    res.status(500).json({ error: err.message || "The candles flickered out." });
   }
 });
 
-// SPA-ish fallback for unknown non-API paths
 app.get("*", (req, res, next) => {
   if (req.path.startsWith("/api/")) return next();
   res.sendFile(path.join(__dirname, "public", "index.html"));
